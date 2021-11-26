@@ -1367,12 +1367,12 @@ saveTrees(Bottoms,FileName):-
   
   writeList(List,FileName):-
   open(FileName,write, Stream),
-  writeList1(Stream,List),
+  writeList1(List,Stream),
   close(Stream).
-  writeList1(_,[]).
-  writeList1(Stream,[HeadList|RestList]):-
+  writeList1([],_).
+  writeList1([HeadList|RestList],Stream):-
   writeln(Stream,HeadList),
-  writeList1(Stream,RestList).
+  writeList1(RestList,Stream).
   
   
   %!	writeClause
