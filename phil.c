@@ -262,8 +262,8 @@ void construct_leaves_node(node **leaves_node, int lenRules)
 // Converts an arithmetic circuit (a term prolog) into n-aries tree in C
 node *convertACToTree(term_t AC)
 {
-  int ret, ind, i, j, lenNodes1;
-  size_t arity;
+  int ret, ind, j, lenNodes1;
+  size_t arity, i;
   size_t lenNodes;
   atom_t name;
   char *type;
