@@ -51,6 +51,8 @@ int Regularized;        // 1 if regularization is enabled otherwise 0
 node *new_node(double val, char type[]);
 node *add_sibling(node *n, double val, char type[]);
 node *add_child(node *n, double val, char type[]);
+void free_node(node *root);
+void free_nodes (node **nodes_ex, int lenNodes);
 void construct_leaves_node(node **leaves_node, int lenRules);
 void printAC(node *root, char *Choice);
 double randInRange(double min, double max);
@@ -103,6 +105,25 @@ static foreign_t pl_emphil(term_t Nodes, term_t Params, term_t RegParams, term_t
 static foreign_t pl_forward(term_t Circuit, term_t Parameters, term_t NR1, term_t Output);
 
 // ++++++++++ Common util functions for Gradient descent and EM +++++++++++++++
+// Free and aritmetic circuit
+void free_node(node *root)
+{
+  if (root == NULL)
+    return;
+  while (root->next != NULL)
+    free_node(root->next);
+  free_node(root->child);
+}
+// Free all aritmetic circuits
+void free_nodes (node **nodes_ex, int lenNodes)
+{
+  for (int i = 0; i < lenNodes; i++)
+  {
+    free_node(nodes_ex[i]);
+  }
+  free(nodes_ex);
+}
+// creates a new node
 node *new_node(double val, char type[])
 {
   node *new_node = malloc(sizeof(node));
@@ -241,7 +262,8 @@ void construct_leaves_node(node **leaves_node, int lenRules)
 // Converts an arithmetic circuit (a term prolog) into n-aries tree in C
 node *convertACToTree(term_t AC)
 {
-  int ret, ind, arity, i, j, lenNodes1;
+  int ret, ind, i, j, lenNodes1;
+  size_t arity;
   size_t lenNodes;
   atom_t name;
   char *type;
@@ -571,7 +593,7 @@ int getHyperParameters(term_t Params, term_t StopCond, term_t Folder, int *MaxIt
   if (strcmp(initialized, "yes") == 0 || strcmp(initialized, "Yes") == 0 || strcmp(initialized, "YES") == 0)
   {
     Init = 1;
-    InitParameters = (double *)malloc((*NR) * sizeof(double));
+    InitParameters = (double *)malloc((*NR) * sizeof(double)); // InitParameters is a global variable defined at the beginning of the file
     ret = PL_get_list(nodesTerm1, head, nodesTerm1);
     getParameters(head, InitParameters, *NR);
   }
@@ -634,6 +656,7 @@ int getStrategy(term_t Params2, char **strategy, int *BatchSize, double *Max_W)
   ret = PL_get_float(head, Max_W);
   return ret;
 }
+
 
 // Given the ACs in Nodes, converts them in trees saved in nodes_ex. lenNodes return the number of trees
 int getTrees(term_t Nodes, node ***nodes_ex, int *lenNodes)
@@ -1925,6 +1948,9 @@ static foreign_t pl_dphil(term_t Nodes, term_t Params, term_t StopCond, term_t F
   CLL = dphil(nodes_ex, lenNodes, MaxIter, Probabilities, Weights, NR, EA, ER, Eta, Beta1, Beta2, Adam_hat, Max_W, BatchSize, strategy, statisticsFolder, save, seeded, seed, TypeReg, Gamma); // return the CLL and the learned probabilities
   // return the CLL and the learned probabilies
   ret = setResults(CLL, Probabilities, NR, &CLLFinal, &ProbFinal);
+  free(Probabilities);
+  free(Weights);
+  free_nodes(nodes_ex,lenNodes);
   return ret;
 }
 
@@ -1957,6 +1983,12 @@ static foreign_t pl_emphil(term_t Nodes, term_t Params, term_t RegParams, term_t
   CLL = emphil(nodes_ex, lenNodes, Probabilities, Expectations, Expectations0, NR, MaxIter, EA, ER, statisticsFolder, save, seeded, seed, TypeReg, Gamma, GammaCount);
   // return the CLL and the learned probabilities
   ret = setResults(CLL, Probabilities, NR, &CLLFinal, &ProbFinal);
+  free(InitParameters);
+  free(Probabilities);
+  free(Counts);
+  free(Expectations);
+  free(Expectations0);
+  free_nodes(nodes_ex,lenNodes);
   return ret;
 }
 // Given a single AC Circuit, the list of parameters and the number of rules NR, evaluates the AC
@@ -1976,6 +2008,7 @@ static foreign_t pl_forward(term_t Circuit, term_t Parameters, term_t NR, term_t
   // return the computed value
   ret = PL_put_float(out, root->value);
   ret = PL_unify(Output, out);
+  free(Probabilities);
   return ret;
 }
 
