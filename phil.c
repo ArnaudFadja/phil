@@ -259,8 +259,8 @@ void construct_leaves_node(node **leaves_node, int lenRules)
 // Converts an arithmetic circuit (a term prolog) into n-aries tree in C
 node *convertACToTree(term_t AC)
 {
-  int ret, ind, i, j, lenNodes1;
-  size_t lenNodes, arity;
+  int ret, ind, j, lenNodes1;
+  size_t lenNodes, arity, i;
   atom_t name;
   char *type;
   term_t current_term, current_List_term, temp_term;
@@ -1229,8 +1229,7 @@ void openFilesEM(char *statisticsFolder_base, FILE **probsFile, FILE **expectati
   // FILE *fp;
   // printMessage(fp,"Enter in openFilesEM\n");
   //const char * em_stat_folder = "_Statistics/EM";
-  static const char em_stat_folder[] = "_Statistics/EM";
-  
+  //static const char em_stat_folder[] = "_Statistics/EM";
   struct stat st = {0};
   char statisticsFolder[MaxName];
   char statisticsFolder2[MaxName];
