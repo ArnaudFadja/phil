@@ -428,7 +428,6 @@ induce_hplp_parameters(M:Folds,DB,R):-
   M:in(R00),
   process_clauses(R00,M,[],_,[],R0),
   statistics(walltime,[_,_]),
-  %trace,
   learn_params_hplp(DB,M,R0,R,Score2),
   statistics(walltime,[_,CT]),
   CTS is CT/1000,
@@ -638,6 +637,7 @@ learn_params_hplp(DB,M,R0,R,CLL):-
     ;
     Params=[NR,ZERO,Seeded,Seed,Init]
   ),
+
   format3(M,'Initial CLL on PHIL ~f */~n',[CLL0]),
   retract_all(Th0Ref),
   retract_all(R1Ref),
@@ -745,7 +745,6 @@ induce_hplp_rules(M:Folds,R):-
   statistics(walltime,[_,_]),
   M:local_setting(megaex_bottom,MB),
   deduct(MB,M,DB,[],InitialTheory),
-  %trace,
   remove_duplicates(InitialTheory,R1),
   genHPLP(M,R1,HPLP),
   learn_params_hplp(DB,M,HPLP,R,CLL),
@@ -3186,7 +3185,6 @@ term_expansion_int((Head :- Body),M,(Clauses,[def_rule(Head,BodyList,true)])) :-
   term_expansion_int(Head,M, ((Head1:-phil:onec(Env,One)),[def_rule(Head,[],true)])) :-
     M:local_setting(compiling,on),
     M:local_setting(depth_bound,true),
-    %trace,
     %definite fact with db
     (Head \= ((system:term_expansion(_,_) ):- _ )),
     (Head\= end_of_file),!,
@@ -3194,7 +3192,6 @@ term_expansion_int((Head :- Body),M,(Clauses,[def_rule(Head,BodyList,true)])) :-
   
   term_expansion_int(Head,M, ((Head1:-phil:onec(Env,One)),[def_rule(Head,[],true)])) :-
     M:local_setting(compiling,on),
-    %trace,
     %definite fact without db
     (Head \= ((system:term_expansion(_,_) ):- _ )),
     (Head\= end_of_file),!,
