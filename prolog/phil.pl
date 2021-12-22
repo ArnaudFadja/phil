@@ -1383,7 +1383,7 @@ saveTrees(Bottoms,FileName):-
     copy_term(List,ListCopy),
     numbervars((ListCopy,_ListVar),0,_V),
     writeln(Stream,"Learned Program"),
-    writeClause1(Stream,ListCopy),
+    writeClause1(ListCopy,Stream),
     close(Stream).
   
   
@@ -1393,11 +1393,11 @@ saveTrees(Bottoms,FileName):-
     writeln(user_output,"Learned Program"),
     writeClause1(user_output,ListCopy).
   
-  writeClause1(_,[]).
-  writeClause1(Stream,[HeadList|RestList]):-
+  writeClause1([],_).
+  writeClause1([HeadList|RestList],Stream):-
     write(Stream,HeadList),
     writeln(Stream,"."),
-    writeClause1(Stream,RestList).
+    writeClause1(RestList,Stream).
 
 
   /*update_theory_par([],[],[]).
