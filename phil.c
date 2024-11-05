@@ -260,7 +260,8 @@ void construct_leaves_node(node **leaves_node, int lenRules)
 node *convertACToTree(term_t AC)
 {
   int ret, ind, j, lenNodes1;
-  size_t lenNodes, arity, i;
+  size_t lenNodes, i;
+  int arity;
   atom_t name;
   char *type;
   term_t current_term, current_List_term, temp_term;
